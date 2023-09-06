@@ -146,6 +146,7 @@ def user_signup_r(request):
             return JsonResponse({'status':'SignedUp'},safe=False)
 
 
+
 def admin_r(request):
     method = request.GET.get('method')
     user = User.objects.get(email='aaa@gmail.com')
