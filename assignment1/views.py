@@ -369,9 +369,10 @@ def get_user_bucket_list(request):
             bucket_id = i.project_id
             try:
                bucket_name = Project.objects.get(id=bucket_id).title
+               user_all_buckets[bucket_name] = bucket_id 
             except:
                pass
-            user_all_buckets[bucket_name] = bucket_id 
+            
         ####################
         fl = []
         for j in project_all_buckets:
