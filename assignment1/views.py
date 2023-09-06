@@ -346,6 +346,7 @@ def get_user_bucket_list(request):
         email = request.POST.get('email')
         role = request.POST.get('role')
         project_name = request.POST.get('project_name')
+        project_id =Projects.objects.get(project_name=project_name).id
         if email == None or role== None or project_name == None:
              return JsonResponse({'status':'missing role or email or project_name'},safe=False)
         
@@ -389,6 +390,7 @@ def get_user_bucket_list(request):
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
                             "project_name" : project_name,
+                            "project_id" : project_id,
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
@@ -423,6 +425,7 @@ def get_qc_person_bucket_list(request):
                     except:
                        assigned_to = None
                     project_name = FolderProjectMapping.objects.get(folder_name=bucket.title).project_name
+                    project_id = Projects.objects.get(project_name=project_name).id
                      
                     task_urls.append(
                         {
@@ -431,6 +434,7 @@ def get_qc_person_bucket_list(request):
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
                             "project_name" : project_name,
+                            "project_id" : project_id,
                         }
                     )
         return JsonResponse(task_urls, safe=False)
