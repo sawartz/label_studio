@@ -1,0 +1,13 @@
+<form method="POST" action ="{% url 'show_user' pk %}" style="font-family: Arial, sans-serif;">
+
+    {% for user in all_users %}
+        <input type="radio" name="user" value="{{user.email}}" id="{{user}}" required style="margin: 10px;">
+        <label for="{{user}}" style="margin-right: 10px;">{{user}}</label><br>
+    {% endfor %}
+    
+    <input type="radio" name="user" value="None" id="None" required style="margin: 10px;">
+    <label for="None" style="margin-right: 10px;">None</label><br>
+    
+    <input type="submit" value="Submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">
+    </form>
+    

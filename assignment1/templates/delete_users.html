@@ -1,0 +1,46 @@
+<style>
+    ul.user-emails {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    ul.user-emails li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between; /* This will separate email and button */
+        align-items: center; /* This will vertically align the email and button in case of multiline emails */
+    }
+
+    ul.user-emails li:last-child {
+        border-bottom: none;
+    }
+
+    button.delete-btn {
+        background-color: #e74c3c;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button.delete-btn:hover {
+        background-color: #c0392b;
+    }
+</style>
+
+<h2>User Emails</h2>
+<ul class="user-emails">
+{% for user in users %}
+    <li>
+        <span>{{ user.email }}</span> <!-- Span to wrap the email for more control if needed in the future -->
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="user_email" value="{{ user.email }}">
+            <button type="submit" class="delete-btn">Delete</button>
+        </form>
+    </li>
+{% endfor %}
+</ul>
