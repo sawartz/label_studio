@@ -354,10 +354,8 @@ def get_user_bucket_list(request):
         ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
         buckets = ls.get_projects()
 
-        if role == 'user':
-           filter_p = Assignment.objects.filter(assigned_to=email)
-        else:
-            filter_p = Assignment.objects.filter(qc_person=email)
+        filter_p = Assignment.objects.filter(assigned_to=email)
+        
         user_all_buckets = {}
         for i in filter_p:
             try:
@@ -390,6 +388,49 @@ def get_user_bucket_list(request):
                             "bucket_title":bucket.title,
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
+                            "project_name" : project_name,
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
+
+
+
+def get_qc_person_bucket_list(request):
+  if request.method == 'POST':
+        email = request.POST.get('email')
+        if email == None:
+             return JsonResponse({'status':'missing email'},safe=False)
+
+        ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
+        buckets = ls.get_projects()
+        task_urls = []
+
+        filter_p = Assignment.objects.filter(qc_person=email)
+
+        fl = []
+        for i in filter_p:
+            fl.append(i.project_id)
+
+        for bucket in buckets:
+            if int(bucket.id) in fl:
+                    try:
+                       qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
+                    except:
+                       qc_person = None
+
+                    try:
+                       assigned_to = Assignment.objects.get(project_id=bucket.id).assigned_to
+                    except:
+                       assigned_to = None
+                    project_name = FolderProjectMapping.objects.get(folder_name=bucket.title).project_name
+                     
+                    task_urls.append(
+                        {
+                            'bucket_id':bucket.id,
+                            "bucket_title":bucket.title,
+                            "assigned_to" : assigned_to,
+                            "qc_person" : qc_person,
+                            "project_name" : project_name,
+                        }
+                    )
+        return JsonResponse(task_urls, safe=False)
