@@ -37,67 +37,6 @@ user = User.objects.get(email='aaa@gmail.com')
 API_KEY = user.auth_token
 
 
-
-def get_tasks(request):
-  if request.method == 'POST':
-        email = request.POST.get('email')
-        role = request.POST.get('role')
-        if email == None or role== None:
-             return JsonResponse({'status':'missing role or email'})
-
-        ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
-        projects = ls.get_projects()
-        task_urls = []
-
-        if role == 'user':
-           filter_p = Assignment.objects.filter(assigned_to=email)
-        else:
-            filter_p = Assignment.objects.filter(qc_person=email)
-        fl = []
-        for i in filter_p:
-            fl.append(i.project_id)
-
-        for project in projects:
-            if int(project.id) in fl:
-                tasks = project.get_tasks()
-                for task in tasks:
-                    task_id = task["id"]
-                    task_url = f'{LABEL_STUDIO_URL}projects/{str(project.id)}/data?tab=&task={str(task_id)}'
-                    completed_at = task["completed_at"]
-                    created_at = task["created_at"]
-                    updated_at = task["updated_at"]
-                    try:
-                       qc_status = QcStatus.objects.get(task_id=task_id).status
-                    except:
-                       qc_status =  None
-
-                    try:
-                       qc_person = Assignment.objects.get(project_id=project.id).qc_person
-                    except:
-                       qc_person = None
-
-                    try:
-                       assigned_to = Assignment.objects.get(project_id=project.id).assigned_to
-                    except:
-                       assigned_to = None
-                     
-                    task_urls.append(
-                        {
-                            "task_id": task_id,
-                            "task_url": task_url,
-                            "completed_at": completed_at,
-                            "created_at" : created_at,
-                            "updated_at" : updated_at,
-                            "project_title":project.title,
-                            "assigned_to" : assigned_to,
-                            "qc_person" : qc_person,
-                            "qc_status" : qc_status
-                        }
-                    )
-        return JsonResponse(task_urls, safe=False)
-
-
-
 #used
 def fetch_qc_status(request):
    if request.method == 'POST':
@@ -372,4 +311,106 @@ def delete_bucket(request):
       return JsonResponse({'status': 'BucketDeleted'},safe=False)
     
 
-    
+def get_user_bucket_list(request):
+   if request.method == 'POST':
+      project_id = request.POST.get('project_id')
+      if project_id == None:
+         return JsonResponse({'status':'missing project_name'},safe=False)
+      project_name = Projects.objects.get(id=project_id).project_name
+      project_folders = FolderProjectMapping.objects.filter(project_name=project_name)
+      all_folders = Project.objects.all()
+      folder_list = []
+
+      for folder in all_folders:
+         for project_folder in project_folders:
+            if folder.title == project_folder.folder_name:    
+               try:
+                  assigned_to = Assignment.objects.get(project_id=folder.id).assigned_to
+               except:
+                  assigned_to = None
+               try:
+                  qc_person = Assignment.objects.get(project_id=folder.id).qc_person
+               except:
+                  qc_person = None
+               folder_list.append({
+                  "id" : folder.id,
+                  'title' : folder.title,
+                  "assigned_to": assigned_to,
+                  "qc_person" : qc_person,
+               }) 
+      return JsonResponse(folder_list,safe=False)
+   
+
+def get_user_bucket_list(request):
+  if request.method == 'POST':
+        email = request.POST.get('email')
+        role = request.POST.get('role')
+        project_name = request.POST.get('project_name')
+
+        project_all_buckets = FolderProjectMapping.objects.filter(project_name=project_name)
+        
+
+        if email == None or role== None or project_name == None:
+             return JsonResponse({'status':'missing role or email or project_name'},safe=False)
+
+        ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
+        buckets = ls.get_projects()
+        task_urls = []
+        
+        
+        if role == 'user':
+           filter_p = Assignment.objects.filter(assigned_to=email)
+        else:
+            filter_p = Assignment.objects.filter(qc_person=email)
+        
+        ####################
+        user_all_buckets = {}
+        for i in filter_p:
+            bucket_id = i.project_id
+            bucket_name = Project.objects.get(id=bucket_id).title
+            user_all_buckets[bucket_name] = bucket_id 
+        ####################
+        fl = []
+        for j in project_all_buckets:
+           if j.folder_name in user_all_buckets:
+               fl.append(user_all_buckets[j.folder_name])
+                   
+      
+        for bucket in buckets:
+            if int(bucket.id) in fl:
+                tasks = bucket.get_tasks()
+                for task in tasks:
+                    task_id = task["id"]
+                    task_url = f'{LABEL_STUDIO_URL}projects/{str(bucket.id)}/data?tab=&task={str(task_id)}'
+                    completed_at = task["completed_at"]
+                    created_at = task["created_at"]
+                    updated_at = task["updated_at"]
+                    try:
+                       qc_status = QcStatus.objects.get(task_id=task_id).status
+                    except:
+                       qc_status =  None
+
+                    try:
+                       qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
+                    except:
+                       qc_person = None
+
+                    try:
+                       assigned_to = Assignment.objects.get(project_id=bucket.id).assigned_to
+                    except:
+                       assigned_to = None
+                     
+                    task_urls.append(
+                        {
+                            "task_id": task_id,
+                            "task_url": task_url,
+                            "completed_at": completed_at,
+                            "created_at" : created_at,
+                            "updated_at" : updated_at,
+                            "bucket_title":bucket.title,
+                            "assigned_to" : assigned_to,
+                            "qc_person" : qc_person,
+                            "qc_status" : qc_status
+                        }
+                    )
+        return JsonResponse(task_urls, safe=False)
