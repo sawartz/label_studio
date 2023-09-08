@@ -20,3 +20,9 @@ class Projects(models.Model):
 class FolderProjectMapping(models.Model):
     folder_name = models.CharField(null=True,max_length=100)
     project_name = models.CharField(null=True,max_length=100)
+
+class Status(models.Model):
+    bucket_id = models.IntegerField(null=True)
+    status = models.CharField(null=True,max_length=50)
+
+    

@@ -6,7 +6,7 @@ from django.shortcuts import redirect,reverse
 from users.functions import login
 from users.models import User
 from projects.models import Project
-from .models import Assignment,QcStatus,Projects,FolderProjectMapping
+from .models import Assignment,QcStatus,Projects,FolderProjectMapping,Status
 from core import views
 from organizations.models import Organization
 
@@ -331,18 +331,48 @@ def get_bucket_list(request):
       for bucket in all_buckets:
          for project_bucket in project_buckets:
             if bucket.title == project_bucket.folder_name:
-               accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Accepted").count()
-               rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Rejected").count()
-               total_tasks = len(bucket.get_tasks())
+               
 
                try:
                   assigned_to = Assignment.objects.get(project_id=bucket.id).assigned_to
                except:
                   assigned_to = None
+
+               accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Accepted").count()
+               rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Rejected").count()
+               tasks = bucket.get_tasks()
+               total_tasks = len(tasks)
+
                try:
                   qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
                except:
                   qc_person = None
+
+               try:
+                   bucket_status = Status.objects.get(bucket_id=bucket.id).status
+               except:
+                   bucket_status = None
+
+               completed = True
+               for task in bucket.get_tasks():
+                   if task['completed_at'] == None:
+                       completed = False
+                       break
+                   
+
+               if bucket_status!=None:
+                   status = bucket_status
+               elif qc_person !=None:
+                   status = 'In Qc'
+               elif completed==True:
+                   status = 'Completed'
+               elif assigned_to !=None:
+                   status = 'Active'
+               else:
+                   status = None
+                   
+                              
+
                try:
                    assigned_at = Assignment.objects.get(project_id=bucket.id).assigned_at
                except:
@@ -360,6 +390,7 @@ def get_bucket_list(request):
                   "accepted_tasks" : accepted_tasks,
                   "rejected_tasks" : rejected_tasks,
                   "total_tasks" :total_tasks,
+                  "status" : status
                   
                }) 
       return JsonResponse(bucket_list,safe=False)
@@ -414,6 +445,32 @@ def get_user_bucket_list(request):
                         assigned_at = Assignment.objects.get(project_id=bucket.id).assigned_at
                     except:
                         assigned_at = None
+
+
+                    try:
+                        bucket_status = Status.objects.get(bucket_id=bucket.id).status
+                    except:
+                        bucket_status = None
+
+                    completed = True
+                    for task in bucket.get_tasks():
+                        if task['completed_at'] == None:
+                           completed = False
+                           break
+                        
+
+                    if bucket_status!=None:
+                        status = bucket_status
+                    elif qc_person !=None:
+                        status = 'In Qc'
+                    elif completed==True:
+                        status = 'Completed'
+                    elif assigned_to !=None:
+                        status = 'Active'
+                    else:
+                        status = None
+
+
                            
                     filter_buckets.append(
                         {
@@ -428,6 +485,7 @@ def get_user_bucket_list(request):
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
+                            "status" :status
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
@@ -472,6 +530,30 @@ def get_qc_person_bucket_list(request):
 
                     project_name = FolderProjectMapping.objects.get(folder_name=bucket.title).project_name
                     project_id = Projects.objects.get(project_name=project_name).id
+
+                    try:
+                        bucket_status = Status.objects.get(bucket_id=bucket.id).status
+                    except:
+                        bucket_status = None
+
+                    completed = True
+                    for task in bucket.get_tasks():
+                        if task['completed_at'] == None:
+                           completed = False
+                           break
+                        
+
+                    if bucket_status!=None:
+                        status = bucket_status
+                    elif qc_person !=None:
+                        status = 'In Qc'
+                    elif completed==True:
+                        status = 'Completed'
+                    elif assigned_to !=None:
+                        status = 'Active'
+                    else:
+                        status = None
+
                      
                     filter_buckets.append(
                         {
@@ -486,6 +568,23 @@ def get_qc_person_bucket_list(request):
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
+                            "status" : status
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
+  
+def change_status(request):
+  if request.method == 'POST':
+        bucket_id = request.POST.get('bucket_id')
+        status = request.POST.get('status')
+        if bucket_id ==None or status == None:
+            return JsonResponse({'status': 'missing bucket_id or status'},safe=False)
+        try:
+               status = Status.objects.get(bucket_id=bucket_id)
+               status.status = status
+               status.save()
+               return JsonResponse({'status':'StatusUpdated'},safe=False)
+        except Status.DoesNotExist:
+                  status = Status(bucket_id=bucket_id, status=status)
+                  status.save()
+                  return JsonResponse({'status':'StatusUpdated'},safe=False)
