@@ -573,7 +573,7 @@ def get_qc_person_bucket_list(request):
                     )
         return JsonResponse(filter_buckets, safe=False)
   
-def change_status(request):
+def change_bucket_status(request):
   if request.method == 'POST':
         bucket_id = request.POST.get('bucket_id')
         status = request.POST.get('status')
