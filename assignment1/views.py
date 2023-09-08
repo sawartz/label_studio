@@ -227,7 +227,7 @@ def get_task_list(request):
                }
          )
       return JsonResponse(task_urls, safe=False)
-  
+
 
 def delete_project(request):
     if request.method == 'POST':
@@ -324,7 +324,8 @@ def get_bucket_list(request):
          return JsonResponse({'status':'missing project_name'},safe=False)
       project_name = Projects.objects.get(id=project_id).project_name
       project_buckets = FolderProjectMapping.objects.filter(project_name=project_name)
-      all_buckets = Project.objects.all()
+      ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
+      all_buckets = ls.get_projects()
       bucket_list = []
 
       for bucket in all_buckets:
