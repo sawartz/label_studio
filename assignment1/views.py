@@ -186,6 +186,11 @@ def get_task_list(request):
          completed_at = task["completed_at"]
          created_at = task["created_at"]
          updated_at = task["updated_at"]
+         if completed_at == None:
+             task_status = None
+         else:
+             task_status = 'In Progress'
+             
          try:
             qc_status = QcStatus.objects.get(task_id=task_id).status
          except:
@@ -217,7 +222,8 @@ def get_task_list(request):
                   "projetc_name" : project_name,
                   "assigned_to" : assigned_to,
                   "qc_person" : qc_person,
-                  "qc_status" : qc_status
+                  "qc_status" : qc_status,
+                  "task_status" : task_status
                }
          )
       return JsonResponse(task_urls, safe=False)
