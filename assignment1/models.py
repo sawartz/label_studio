@@ -5,6 +5,7 @@ class Assignment(models.Model):
     project_id = models.IntegerField(null=False)
     assigned_to = models.CharField(null=True,max_length=100)
     qc_person = models.CharField(null=True,max_length=100)
+    assigned_at = models.DateTimeField(auto_now=True,null=True)
     
 class QcStatus(models.Model):
     project_id = models.IntegerField(null=True)

@@ -82,10 +82,10 @@ urlpatterns = [
     #  path(r'delete_users/', ass.delete_users, name='delete_users'),
     ###########
     path(r'add_qc_status/', ass.add_qc_status, name="add_qc_status"),
-    path(r'fetch_qc_status/', ass.fetch_qc_status, name="fetch_qc_status"),
+    # path(r'fetch_qc_status/', ass.fetch_qc_status, name="fetch_qc_status"),
     path(r'get_user_list/', ass.get_user_list, name="get_user_list"),
     path(r'assign_bucket/', ass.assign_bucket, name="assign_bucket"),
-    path(r'fetch_assigned_project/', ass.fetch_assigned_project, name="fetch_assigned_project"),
+    # path(r'fetch_assigned_project/', ass.fetch_assigned_project, name="fetch_assigned_project"),
     path(r'delete_users/', ass.delete_users, name="delete_users"),
     path(r'delete_bucket/', ass.delete_bucket, name="delete_bucket"),
     path(r'delete_project/', ass.delete_project, name="delete_project"),
