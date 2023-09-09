@@ -6,6 +6,7 @@ from django.shortcuts import redirect,reverse
 from users.functions import login
 from users.models import User
 from projects.models import Project
+from tasks.models import Task
 from .models import Assignment,QcStatus,Projects,FolderProjectMapping,Status
 from core import views
 from organizations.models import Organization
@@ -15,6 +16,7 @@ def add_qc_status(request):
    if request.method == 'POST':
        status = request.POST['status']
        task_id = request.POST['task_id']
+
        if task_id == None:
            return JsonResponse({'status':'missing task id'},safe=False)
        try:
@@ -23,7 +25,8 @@ def add_qc_status(request):
                qc_status.save()
                return JsonResponse({'status':'StatusUpdated'},safe=False)
        except QcStatus.DoesNotExist:
-                  qc_status = QcStatus(task_id=task_id, status=status)
+                  bucket_id = FolderProjectMapping.objects.get()
+                  qc_status = QcStatus(task_id=task_id, status=status,project_id='')
                   qc_status.save()
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
 
@@ -547,3 +550,14 @@ def change_bucket_status(request):
 
 
 
+def test(request):
+    if request.method=='POST':
+        q =  QcStatus.objects.all()
+        for i in q:
+            print(i.id,i.project_id,i.task_id,i.status)        
+
+
+def test2(request):
+    if request.method =='POST':
+        t = Task.objects.get(id=18)
+        print(dir(t))

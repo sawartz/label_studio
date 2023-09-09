@@ -97,6 +97,8 @@ urlpatterns = [
     path(r'get_task_list/', ass.get_task_list, name="get_task_list"),
     path(r'get_qc_person_bucket_list/', ass.get_qc_person_bucket_list, name="get_qc_person_bucket_list"),
     path(r'change_bucket_status/', ass.change_bucket_status, name="change_bucket_status"),
+    path(r'test/', ass.test, name="test"),
+    path(r'test2/', ass.test2, name="test2"),
 
 
 
