@@ -205,9 +205,9 @@ def get_task_list(request):
                   "bucket_title":str(bucket.title).lower(),
                   "projetc_name" : project_name.lower(),
                   "assigned_to" : assigned_to,
-                  "qc_person" : qc_person.lower(),
-                  "qc_status" : qc_status.lower(),
-                  "task_status" : task_status.lower()
+                  "qc_person" : str(qc_person).lower(),
+                  "qc_status" : str(qc_status).lower(),
+                  "task_status" : str(task_status).lower()
                }
          )
       return JsonResponse(task_urls, safe=False)
@@ -338,14 +338,14 @@ def get_bucket_list(request):
                   'bucket_title' : str(bucket.title).lower(),
                   "assigned_to": assigned_to,
                   "qc_person" : qc_person,
-                  "project_name" : project_name.lower(),
+                  "project_name" : str(project_name).lower(),
                   "project_id" : project_id,
                   "created_at" : bucket.created_at,
                   "assigned_at" : assigned_at,
                   "accepted_tasks" : accepted_tasks,
                   "rejected_tasks" : rejected_tasks,
                   "total_tasks" :total_tasks,
-                  "status" : status.lower()
+                  "status" : str(status).lower()
                   
                }) 
       return JsonResponse(bucket_list,safe=False)
@@ -433,14 +433,14 @@ def get_user_bucket_list(request):
                             "bucket_title":str(bucket.title).lower(),
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
-                            "project_name" : project_name.lower(),
+                            "project_name" : str(project_name).lower(),
                             "project_id" : project_id,
                             "created_at" : bucket.created_at,
                             "assigned_at" : assigned_at,
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
-                            "status" :status.lower()
+                            "status" :str(status).lower()
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
@@ -516,14 +516,14 @@ def get_qc_person_bucket_list(request):
                             "bucket_title":str(bucket.title).lower(),
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
-                            "project_name" : project_name.lower(),
+                            "project_name" : str(project_name).lower(),
                             "project_id" : project_id,
                             "created_at" : bucket.created_at,
                             "assigned_at" : assigned_at,
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
-                            "status" : status.lower()
+                            "status" : str(status).lower()
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
