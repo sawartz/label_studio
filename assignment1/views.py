@@ -22,6 +22,7 @@ def add_qc_status(request):
        try:
                qc_status = QcStatus.objects.get(task_id=task_id)
                qc_status.status = status
+               qc_status.project_id = Task.objects.get(id=task_id).project_id
                qc_status.save()
                return JsonResponse({'status':'StatusUpdated'},safe=False)
        except QcStatus.DoesNotExist:
