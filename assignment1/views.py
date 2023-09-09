@@ -38,16 +38,6 @@ API_KEY = user.auth_token
 
 
 #used
-# def fetch_qc_status(request):
-#    if request.method == 'POST':
-#       task_id = request.POST['task_id']
-#       try:
-#          status = QcStatus.objects.get(task_id=task_id).status
-#       except:
-#          status = 'Pending'
-#       return JsonResponse({'status':status},safe=False)
-
-#used
 def get_user_list(request):
    if request.method == 'POST':
       all_users = User.objects.exclude(email="aaa@gmail.com")
@@ -78,15 +68,6 @@ def assign_bucket(request):
             assignment.save()
             return JsonResponse({'assigned_to':assigned_to,'qc_person':qc_person},safe=False)
              
-#used
-# def fetch_assigned_project(request):
-#    if request.method == 'POST':
-#       project_id = request.POST['project_id']
-#       try:
-#          assigned_to = Assignment.objects.get(project_id=project_id).assigned_to
-#       except:
-#          assigned_to = 'Pending'
-#       return JsonResponse({'status':assigned_to},safe=False)
 
 #used
 def delete_users(request):
@@ -186,10 +167,6 @@ def get_task_list(request):
          completed_at = task["completed_at"]
          created_at = task["created_at"]
          updated_at = task["updated_at"]
-         if completed_at == None:
-             task_status = None
-         else:
-             task_status = 'In Progress'
              
          try:
             qc_status = QcStatus.objects.get(task_id=task_id).status
@@ -210,6 +187,13 @@ def get_task_list(request):
             assigned_to = Assignment.objects.get(project_id=bucket_id).assigned_to
          except:
             assigned_to = None
+
+         if qc_status!=None:
+             task_status = qc_status
+         elif completed_at != None:
+             task_status = 'In Progress'
+         else:
+             task_status = None
             
          task_urls.append(
                {
@@ -218,12 +202,12 @@ def get_task_list(request):
                   "completed_at": completed_at,
                   "created_at" : created_at,
                   "updated_at" : updated_at,
-                  "bucket_title":bucket.title,
-                  "projetc_name" : project_name,
+                  "bucket_title":str(bucket.title).lower(),
+                  "projetc_name" : project_name.lower(),
                   "assigned_to" : assigned_to,
-                  "qc_person" : qc_person,
-                  "qc_status" : qc_status,
-                  "task_status" : task_status
+                  "qc_person" : qc_person.lower(),
+                  "qc_status" : qc_status.lower(),
+                  "task_status" : task_status.lower()
                }
          )
       return JsonResponse(task_urls, safe=False)
@@ -284,36 +268,7 @@ def delete_bucket(request):
       #4
       Project.objects.get(id=bucket_id).delete()
       return JsonResponse({'status': 'BucketDeleted'},safe=False)
-    
-
-# def get_user_bucket_list(request):
-#    if request.method == 'POST':
-#       project_id = request.POST.get('project_id')
-#       if project_id == None:
-#          return JsonResponse({'status':'missing project_name'},safe=False)
-#       project_name = Projects.objects.get(id=project_id).project_name
-#       project_folders = FolderProjectMapping.objects.filter(project_name=project_name)
-#       all_folders = Project.objects.all()
-#       folder_list = []
-
-#       for folder in all_folders:
-#          for project_folder in project_folders:
-#             if folder.title == project_folder.folder_name:    
-#                try:
-#                   assigned_to = Assignment.objects.get(project_id=folder.id).assigned_to
-#                except:
-#                   assigned_to = None
-#                try:
-#                   qc_person = Assignment.objects.get(project_id=folder.id).qc_person
-#                except:
-#                   qc_person = None
-#                folder_list.append({
-#                   "id" : folder.id,
-#                   'title' : folder.title,
-#                   "assigned_to": assigned_to,
-#                   "qc_person" : qc_person,
-#                }) 
-#       return JsonResponse(folder_list,safe=False)
+   
 
 
 # used
@@ -380,17 +335,17 @@ def get_bucket_list(request):
 
                bucket_list.append({
                   "bucket_id" : bucket.id,
-                  'bucket_title' : bucket.title,
+                  'bucket_title' : str(bucket.title).lower(),
                   "assigned_to": assigned_to,
                   "qc_person" : qc_person,
-                  "project_name" : project_name,
+                  "project_name" : project_name.lower(),
                   "project_id" : project_id,
                   "created_at" : bucket.created_at,
                   "assigned_at" : assigned_at,
                   "accepted_tasks" : accepted_tasks,
                   "rejected_tasks" : rejected_tasks,
                   "total_tasks" :total_tasks,
-                  "status" : status
+                  "status" : status.lower()
                   
                }) 
       return JsonResponse(bucket_list,safe=False)
@@ -475,17 +430,17 @@ def get_user_bucket_list(request):
                     filter_buckets.append(
                         {
                             'bucket_id':bucket.id,
-                            "bucket_title":bucket.title,
+                            "bucket_title":str(bucket.title).lower(),
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
-                            "project_name" : project_name,
+                            "project_name" : project_name.lower(),
                             "project_id" : project_id,
                             "created_at" : bucket.created_at,
                             "assigned_at" : assigned_at,
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
-                            "status" :status
+                            "status" :status.lower()
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
@@ -558,17 +513,17 @@ def get_qc_person_bucket_list(request):
                     filter_buckets.append(
                         {
                             'bucket_id':bucket.id,
-                            "bucket_title":bucket.title,
+                            "bucket_title":str(bucket.title).lower(),
                             "assigned_to" : assigned_to,
                             "qc_person" : qc_person,
-                            "project_name" : project_name,
+                            "project_name" : project_name.lower(),
                             "project_id" : project_id,
                             "created_at" : bucket.created_at,
                             "assigned_at" : assigned_at,
                             "accepted_tasks" : accepted_tasks,
                             "rejected_tasks" : rejected_tasks,
                             "total_tasks" :total_tasks,
-                            "status" : status
+                            "status" : status.lower()
                         }
                     )
         return JsonResponse(filter_buckets, safe=False)
@@ -588,3 +543,7 @@ def change_bucket_status(request):
                   status = Status(bucket_id=bucket_id, status=status)
                   status.save()
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
+
+
+
+
