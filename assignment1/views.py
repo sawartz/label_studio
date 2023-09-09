@@ -25,8 +25,7 @@ def add_qc_status(request):
                qc_status.save()
                return JsonResponse({'status':'StatusUpdated'},safe=False)
        except QcStatus.DoesNotExist:
-                  bucket_id = FolderProjectMapping.objects.get()
-                  qc_status = QcStatus(task_id=task_id, status=status,project_id='')
+                  qc_status = QcStatus(task_id=task_id, status=status,project_id=Task.objects.get(id=task_id).project_id)
                   qc_status.save()
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
 
