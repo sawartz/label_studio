@@ -293,8 +293,8 @@ def get_bucket_list(request):
                except:
                   assigned_to = None
 
-               accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Accepted").count()
-               rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Rejected").count()
+               accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="accepted").count()
+               rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="rejected").count()
                tasks = bucket.get_tasks()
                total_tasks = len(tasks)
 
@@ -383,8 +383,8 @@ def get_user_bucket_list(request):
         filter_buckets = []
         for bucket in buckets:
             if int(bucket.id) in fl:
-                    accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Accepted").count()
-                    rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Rejected").count()
+                    accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="accepted").count()
+                    rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="rejected").count()
                     total_tasks = len(bucket.get_tasks())
                     try:
                        qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
@@ -465,8 +465,8 @@ def get_qc_person_bucket_list(request):
 
         for bucket in buckets:
             if int(bucket.id) in fl:
-                    accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Accepted").count()
-                    rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="Rejected").count()
+                    accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="accepted").count()
+                    rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="rejected").count()
                     total_tasks = len(bucket.get_tasks())
                     try:
                        qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
