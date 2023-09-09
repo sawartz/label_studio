@@ -560,4 +560,4 @@ def test(request):
 def test2(request):
     if request.method =='POST':
         t = Task.objects.get(id=18)
-        print(dir(t))
+        print(t.project_id)
