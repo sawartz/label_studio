@@ -35,7 +35,7 @@ def add_qc_status(request):
 from label_studio_sdk import Client
 from django.http import JsonResponse
 from django.http import HttpResponse
-LABEL_STUDIO_URL = 'http://13.232.114.25:8080/'
+LABEL_STUDIO_URL = 'https://studio.gts.ai/'
 user = User.objects.get(email='aaa@gmail.com')
 API_KEY = user.auth_token
 
