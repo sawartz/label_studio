@@ -356,6 +356,7 @@ def get_bucket_list(request):
 
 def get_user_bucket_list(request):
   if request.method == 'POST':
+        print(request.data)
         email = request.POST.get('email')
         role = request.POST.get('role')
         project_name = request.POST.get('project_name')
