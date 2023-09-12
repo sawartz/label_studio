@@ -547,6 +547,40 @@ def change_bucket_status(request):
                   status = Status(bucket_id=bucket_id, status=status)
                   status.save()
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
+        
+
+
+
+
+def project_report_data(request):
+   if request.method == 'POST':
+      project_name = request.POST.get('project_name')
+      if project_name == None:
+         return JsonResponse({'status':'missing project_name'},safe=False)
+      project_buckets = FolderProjectMapping.objects.filter(project_name=project_name)
+      ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
+      all_buckets = ls.get_projects()
+      report_data = []
+
+      for bucket in all_buckets:
+         for project_bucket in project_buckets:
+            if bucket.title == project_bucket.folder_name:
+               try:
+                  assigned_to = Assignment.objects.get(project_id=bucket.id).assigned_to
+               except:
+                  assigned_to = None
+               try:
+                   bucket_status = Status.objects.get(bucket_id=bucket.id).status
+               except:
+                   bucket_status = None
+
+               report_data.append({
+                   "bucket_title":bucket.title,
+                  "assigned_to": assigned_to,
+                  "bucket_status" : str(bucket_status).lower()
+               }) 
+      return JsonResponse(report_data,safe=False)
+  
 
 
 
@@ -562,3 +596,6 @@ def test2(request):
     if request.method =='POST':
         t = Task.objects.get(id=18)
         print(t.project_id)
+
+
+
