@@ -612,8 +612,71 @@ def project_report_data(request):
       return JsonResponse(final,safe=False)
 
 
+# used
+def get_bucket_status(request):
+   if request.method == 'POST':
+      bucket_id = request.POST.get('bucket_id')
+      if bucket_id == None:
+         return JsonResponse({'status':'missing bucket_id'},safe=False)
+      ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
+      bucket = ls.get_project(bucket_id)
 
+      try:
+         assigned_to = Assignment.objects.get(project_id=bucket.id).assigned_to
+      except:
+         assigned_to = None
 
+      accepted_tasks = QcStatus.objects.filter(project_id=bucket.id, status="accepted").count()
+      rejected_tasks = QcStatus.objects.filter(project_id=bucket.id, status="rejected").count()
+      tasks = bucket.get_tasks()
+      total_tasks = len(tasks)
+
+      try:
+         qc_person = Assignment.objects.get(project_id=bucket.id).qc_person
+      except:
+         qc_person = None
+
+      try:
+            bucket_status = Status.objects.get(bucket_id=bucket.id).status
+      except:
+            bucket_status = None
+
+      completed = True
+      for task in bucket.get_tasks():
+            if task['completed_at'] == None:
+               completed = False
+               break
+      if bucket_status!=None:
+            status = bucket_status
+      elif qc_person !=None:
+            status = 'In Qc'
+      elif completed==True:
+            status = 'Completed'
+      elif assigned_to !=None:
+            status = 'Active'
+      else:
+            status = None
+      try:
+            assigned_at = Assignment.objects.get(project_id=bucket.id).assigned_at
+      except:
+            assigned_at = None
+      project_name = FolderProjectMapping.objects.get(folder_name=bucket.title).project_name
+      project_id = Projects.objects.get(project_name=project_name).id
+      response = {
+         "bucket_id" : bucket.id,
+         'bucket_title' : str(bucket.title).lower(),
+         "assigned_to": assigned_to,
+         "qc_person" : qc_person,
+         "project_name" : str(project_name).lower(),
+         "project_id" : project_id,
+         "created_at" : bucket.created_at,
+         "assigned_at" : assigned_at,
+         "accepted_tasks" : accepted_tasks,
+         "rejected_tasks" : rejected_tasks,
+         "total_tasks" :total_tasks,
+         "status" : str(status).lower()
+      }
+      return JsonResponse(response,safe=False)
 
 def test(request):
     if request.method=='POST':

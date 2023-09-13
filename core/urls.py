@@ -100,6 +100,8 @@ urlpatterns = [
     path(r'test/', ass.test, name="test"),
     path(r'test2/', ass.test2, name="test2"),
     path(r'project_report_data/', ass.project_report_data, name="project_report_data"),
+    path(r'get_bucket_status/', ass.get_bucket_status, name="get_bucket_status"),
+
 
 
 
