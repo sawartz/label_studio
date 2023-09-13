@@ -176,6 +176,10 @@ def get_task_list(request):
             qc_status = QcStatus.objects.get(task_id=task_id).status
          except:
             qc_status =  None
+         try:
+            reason = QcStatus.objects.get(task_id=task_id).reason
+         except:
+            reason =  None
 
          try:
             project_name = FolderProjectMapping.objects.get(folder_name=bucket.title).project_name
@@ -211,6 +215,7 @@ def get_task_list(request):
                   "assigned_to" : assigned_to,
                   "qc_person" : str(qc_person).lower(),
                   "qc_status" : str(qc_status).lower(),
+                  "reason" : str(reason).lower(),
                   "task_status" : str(task_status).lower()
                }
          )
