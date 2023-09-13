@@ -300,9 +300,10 @@ def delete_bucket(request):
 # used
 def get_bucket_list(request):
    if request.method == 'POST':
+      print(request.POST)
       project_id = request.POST.get('project_id')
       if project_id == None:
-         return JsonResponse({'status':'missing project_name'},safe=False)
+         return JsonResponse({'status':'missing project_id'},safe=False)
       project_name = Projects.objects.get(id=project_id).project_name
       project_buckets = FolderProjectMapping.objects.filter(project_name=project_name)
       ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
