@@ -10,6 +10,23 @@ from tasks.models import Task
 from .models import Assignment,QcStatus,Projects,FolderProjectMapping,Status
 from core import views
 from organizations.models import Organization
+from datetime import datetime
+from pytz import timezone
+
+# def utc2ist(utc):
+#    if utc!=None:
+#       utc_time = datetime.strptime(str(utc), "%Y-%m-%dT%H:%M:%S.%fZ")
+#       utc_zone = timezone('UTC')
+#       ist_zone = timezone('Asia/Kolkata')
+#       utc_time = utc_zone.localize(utc_time)
+#       ist_time = utc_time.astimezone(ist_zone)
+#       ist = ist_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+#       return ist
+#    else:
+#        return None
+    
+
+
 
 #used
 def add_qc_status(request):
@@ -159,7 +176,7 @@ def get_task_list(request):
   if request.method == 'POST':
       bucket_id = request.POST.get('bucket_id')
       if bucket_id == None:
-            return JsonResponse({'status':'missing bucket_id'})
+         return JsonResponse({'status':'missing bucket_id'})
 
       ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
       bucket = ls.get_project(bucket_id)
@@ -171,7 +188,7 @@ def get_task_list(request):
          completed_at = task["completed_at"]
          created_at = task["created_at"]
          updated_at = task["updated_at"]
-             
+         
          try:
             qc_status = QcStatus.objects.get(task_id=task_id).status
          except:
