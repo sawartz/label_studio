@@ -575,7 +575,7 @@ def project_report_data(request):
 
                if assigned_to not in report_data and assigned_to!= None:
                   report_data[assigned_to] = [data]
-               else:
+               elif assigned_to!= None:
                    report_data[assigned_to].append(data)
          
       final = []
