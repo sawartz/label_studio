@@ -573,7 +573,7 @@ def project_report_data(request):
 
                data = {"bucket_status" : str(bucket_status).lower()}
 
-               if assigned_to not in report_data:
+               if assigned_to not in report_data and assigned_to!= None:
                   report_data[assigned_to] = [data]
                else:
                    report_data[assigned_to].append(data)
