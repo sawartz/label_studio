@@ -549,9 +549,6 @@ def change_bucket_status(request):
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
         
 
-
-
-
 def project_report_data(request):
    if request.method == 'POST':
       project_name = request.POST.get('project_name')
@@ -560,8 +557,7 @@ def project_report_data(request):
       project_buckets = FolderProjectMapping.objects.filter(project_name=project_name)
       ls = Client(url=LABEL_STUDIO_URL, api_key=str(API_KEY))
       all_buckets = ls.get_projects()
-      report_data = []
-
+      report_data = {}
       for bucket in all_buckets:
          for project_bucket in project_buckets:
             if bucket.title == project_bucket.folder_name:
@@ -574,13 +570,22 @@ def project_report_data(request):
                except:
                    bucket_status = None
 
-               report_data.append({
-                   "bucket_title":bucket.title,
-                  "assigned_to": assigned_to,
-                  "bucket_status" : str(bucket_status).lower()
-               }) 
-      return JsonResponse(report_data,safe=False)
-  
+               data = {"bucket_status" : str(bucket_status).lower()}
+               
+               if assigned_to not in report_data:
+                  report_data[assigned_to] = [data]
+               else:
+                   report_data[assigned_to].append(data)
+         
+      final = []
+      for k,v in report_data:
+            n=0
+            for i in v:
+                if i["bucket_status"] == "Approved":
+                    n+=1
+            final.append({"email":k,"assigned_buckets":len(v),"approved_buckets":n})
+      return JsonResponse(final,safe=False)
+
 
 
 
