@@ -11,6 +11,7 @@ class QcStatus(models.Model):
     project_id = models.IntegerField(null=True)
     task_id = models.IntegerField(null=True)
     status = models.CharField(null=True,max_length=100)
+    reason = models.CharField(null=True,max_length=500)
 
 
 class Projects(models.Model):

@@ -14,22 +14,23 @@ from organizations.models import Organization
 #used
 def add_qc_status(request):
    if request.method == 'POST':
-       status = request.POST['status']
        task_id = request.POST['task_id']
+       status = request.POST['status']
+       reason = request.POST['reason']
 
        if task_id == None:
            return JsonResponse({'status':'missing task id'},safe=False)
        try:
-               qc_status = QcStatus.objects.get(task_id=task_id)
-               qc_status.status = status
-               qc_status.project_id = Task.objects.get(id=task_id).project_id
-               qc_status.save()
-               return JsonResponse({'status':'StatusUpdated'},safe=False)
+            qc_status = QcStatus.objects.get(task_id=task_id)
+            qc_status.status = status
+            qc_status.reason = reason
+            qc_status.project_id = Task.objects.get(id=task_id).project_id
+            qc_status.save()
+            return JsonResponse({'status':'StatusUpdated'},safe=False)
        except QcStatus.DoesNotExist:
-                  qc_status = QcStatus(task_id=task_id, status=status,project_id=Task.objects.get(id=task_id).project_id)
-                  qc_status.save()
-                  return JsonResponse({'status':'StatusUpdated'},safe=False)
-
+            qc_status = QcStatus(task_id=task_id, status=status,project_id=Task.objects.get(id=task_id).project_id,reason = reason)
+            qc_status.save()
+            return JsonResponse({'status':'StatusUpdated'},safe=False)
 
 #####
 from label_studio_sdk import Client
@@ -571,14 +572,14 @@ def project_report_data(request):
                    bucket_status = None
 
                data = {"bucket_status" : str(bucket_status).lower()}
-               
+
                if assigned_to not in report_data:
                   report_data[assigned_to] = [data]
                else:
                    report_data[assigned_to].append(data)
          
       final = []
-      for k,v in report_data:
+      for k,v in report_data.items():
             n=0
             for i in v:
                 if i["bucket_status"] == "Approved":
