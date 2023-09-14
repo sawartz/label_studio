@@ -559,16 +559,16 @@ def get_qc_person_bucket_list(request):
 def change_bucket_status(request):
   if request.method == 'POST':
         bucket_id = request.POST.get('bucket_id')
-        status = request.POST.get('status')
+        statusb = request.POST.get('status')
         if bucket_id ==None or status == None:
             return JsonResponse({'status': 'missing bucket_id or status'},safe=False)
         try:
                status = Status.objects.get(bucket_id=bucket_id)
-               status.status = status
+               status.status = statusb
                status.save()
                return JsonResponse({'status':'StatusUpdated'},safe=False)
         except Status.DoesNotExist:
-                  status = Status(bucket_id=bucket_id, status=status)
+                  status = Status(bucket_id=bucket_id, status=statusb)
                   status.save()
                   return JsonResponse({'status':'StatusUpdated'},safe=False)
         
