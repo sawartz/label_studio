@@ -560,7 +560,7 @@ def change_bucket_status(request):
   if request.method == 'POST':
         bucket_id = request.POST.get('bucket_id')
         statusb = request.POST.get('status')
-        if bucket_id ==None or status == None:
+        if bucket_id ==None or statusb == None:
             return JsonResponse({'status': 'missing bucket_id or status'},safe=False)
         try:
                status = Status.objects.get(bucket_id=bucket_id)
