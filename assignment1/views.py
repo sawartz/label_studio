@@ -33,7 +33,7 @@ def add_qc_status(request):
    if request.method == 'POST':
        task_id = request.POST['task_id']
        status = request.POST['status']
-       reason = request.POST['reason']
+       reason = request.POST.get('reason')
 
        if task_id == None:
            return JsonResponse({'status':'missing task id'},safe=False)
