@@ -44,16 +44,15 @@ logger = logging.getLogger(__name__)
 
 TaskMixin = load_func(settings.TASK_MIXIN)
 
-
+import uuid
 class Task(TaskMixin, models.Model):
     """Business tasks from project"""
 
-    id = models.AutoField(
-        auto_created=True,
+    id = models.UUIDField(
         primary_key=True,
-        serialize=False,
-        verbose_name="ID",
-        db_index=True,
+        default=uuid.uuid4,  # You can use uuid.uuid1() or any other method to generate UUIDs.
+        editable=False,  # If you don't want to allow editing of existing UUIDs.
+        unique=True,  # Ensures uniqueness across records.
     )
     data = JSONField(
         "data",

@@ -13,20 +13,6 @@ from organizations.models import Organization
 from datetime import datetime
 from pytz import timezone
 
-# def utc2ist(utc):
-#    if utc!=None:
-#       utc_time = datetime.strptime(str(utc), "%Y-%m-%dT%H:%M:%S.%fZ")
-#       utc_zone = timezone('UTC')
-#       ist_zone = timezone('Asia/Kolkata')
-#       utc_time = utc_zone.localize(utc_time)
-#       ist_time = utc_time.astimezone(ist_zone)
-#       ist = ist_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-#       return ist
-#    else:
-#        return None
-    
-
-
 
 #used
 def add_qc_status(request):

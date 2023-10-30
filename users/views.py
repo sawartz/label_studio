@@ -145,8 +145,6 @@ def user_signup_r(request):
             proceed_registration(request, user_form, organization_form, next_page)
             return JsonResponse({'status':'SignedUp'},safe=False)
 
-
-
 def admin_r(request):
     method = request.GET.get('method')
     user = User.objects.get(email='aaa@gmail.com')
